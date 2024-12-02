@@ -4,7 +4,7 @@ import kotlin.math.abs
 
 class Solution {
 
-    fun solve(input: String): Int {
+    fun solvePart1(input: String): Int {
 
         return input
             .lineSequence()

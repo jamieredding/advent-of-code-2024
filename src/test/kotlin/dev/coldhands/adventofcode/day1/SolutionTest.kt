@@ -67,9 +67,65 @@ class SolutionTest {
 
         @Test
         fun `personal input`() {
-            val input = SolutionTest::class.java.getResource("part1.txt")!!.readText()
+            val input = SolutionTest::class.java.getResource("personalInput.txt")!!.readText()
 
             underTest.solvePart1(input) shouldBe 3574690
+        }
+    }
+
+
+    @Nested
+    inner class Part2 {
+        @Test
+        fun `left item occurs once in list`() {
+            underTest.solvePart2(
+                """
+            1   1
+            """.trimIndent()
+            ) shouldBe 1
+        }
+
+        @Test
+        fun `two items each occurring once`() {
+            underTest.solvePart2(
+                """
+            1   1
+            2   2
+        """.trimIndent()
+            ) shouldBe 3
+        }
+
+        @Test
+        fun `item occurs multiple times multiplies value`() {
+            underTest.solvePart2(
+                """
+            1   2
+            2   2
+        """.trimIndent()
+            ) shouldBe 4
+        }
+
+        @Test
+        fun `cater for blank lines`() {
+
+            underTest.solvePart2(
+                """
+            1   3
+            
+            
+            2   4
+            
+            
+            
+        """.trimIndent()
+            ) shouldBe 0
+        }
+
+        @Test
+        fun `personal input`() {
+            val input = SolutionTest::class.java.getResource("personalInput.txt")!!.readText()
+
+            underTest.solvePart2(input) shouldBe 22565391
         }
     }
 

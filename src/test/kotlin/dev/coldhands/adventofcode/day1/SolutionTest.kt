@@ -1,5 +1,6 @@
 package dev.coldhands.adventofcode.day1
 
+import dev.coldhands.adventofcode.readPersonalInput
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -67,7 +68,7 @@ class SolutionTest {
 
         @Test
         fun `personal input`() {
-            val input = SolutionTest::class.java.getResource("personalInput.txt")!!.readText()
+            val input = readPersonalInput(this)
 
             underTest.solvePart1(input) shouldBe 3574690
         }
@@ -123,7 +124,7 @@ class SolutionTest {
 
         @Test
         fun `personal input`() {
-            val input = SolutionTest::class.java.getResource("personalInput.txt")!!.readText()
+            val input = readPersonalInput(this)
 
             underTest.solvePart2(input) shouldBe 22565391
         }

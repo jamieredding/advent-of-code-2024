@@ -2,7 +2,6 @@ package dev.coldhands.adventofcode.day2
 
 import dev.coldhands.adventofcode.readPersonalInput
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class SolutionTest {
@@ -27,15 +26,19 @@ class SolutionTest {
         underTest.countSafeReports(input) shouldBe 3
     }
 
-    @Nested
-    inner class Part1 {
-        private val underTest = Solution(NaiveSafetyChecker())
+    @Test
+    fun part1() {
+        val underTest = Solution(NaiveSafetyChecker())
+        val input = readPersonalInput(this)
 
-        @Test
-        fun part1() {
-            val input = readPersonalInput(this)
+        underTest.countSafeReports(input) shouldBe 686
+    }
 
-            underTest.countSafeReports(input) shouldBe 686
-        }
+    @Test
+    fun part2() {
+        val underTest = Solution(DampenedSafetyChecker())
+        val input = readPersonalInput(this)
+
+        underTest.countSafeReports(input) shouldBe 686
     }
 }

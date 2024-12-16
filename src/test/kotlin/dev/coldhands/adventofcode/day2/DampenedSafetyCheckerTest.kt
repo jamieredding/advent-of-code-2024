@@ -28,6 +28,8 @@ class DampenedSafetyCheckerTest {
         strings = [
             "1 1 1 1 1",
             "1 2 3 2 1",
+            "1 5 6 7 6",
+            "1 2 3 7 8",
         ]
     )
     fun unsafeReports(input: String) {

@@ -39,6 +39,7 @@ class SolutionTest {
         val underTest = Solution(DampenedSafetyChecker())
         val input = readPersonalInput(this)
 
-        underTest.countSafeReports(input) shouldBe 686
+        underTest.countSafeReports(input) shouldBe 0
+        // > 711
     }
 }

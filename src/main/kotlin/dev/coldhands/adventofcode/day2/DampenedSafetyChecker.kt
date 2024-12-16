@@ -9,16 +9,13 @@ class DampenedSafetyChecker : SafetyChecker {
     }
 
     private fun isSafeInit(levels: List<Int>, hasBeenDampened: Boolean): Boolean {
-        if (levels.size == 1) {
-            return false
-        }
-
         val (first, second) = levels
 
         val difference = second - first
 
-        return when (abs(difference)) {
-            in 1..3 -> isSafe(levels, difference, hasBeenDampened)
+        return when {
+            abs(difference) in 1..3 -> isSafe(levels, difference, hasBeenDampened)
+            hasBeenDampened -> false
             else -> isSafeInit(levels.drop(1), hasBeenDampened = true)
         }
     }
@@ -33,11 +30,17 @@ class DampenedSafetyChecker : SafetyChecker {
         val changedDirection = sign(prevDifference.toDouble()) != sign(difference.toDouble())
 
         return when {
-            changedDirection && hasBeenDampened -> false
-            changedDirection -> isSafe(levels.drop(1), prevDifference, hasBeenDampened = true)
-            abs(difference) in 1..3 -> isSafe(levels.drop(1), difference, hasBeenDampened)
-            hasBeenDampened -> false
-            else -> isSafe(levels.drop(1), prevDifference, hasBeenDampened = true)
+            meetsOriginalCondition(changedDirection, difference) -> isSafe(levels.drop(1), difference, hasBeenDampened)
+            !hasBeenDampened -> isSafe(levels.dropSecondElement(), prevDifference, hasBeenDampened = true)
+            else -> false
         }
+    }
+
+    private fun meetsOriginalCondition(changedDirection: Boolean, difference: Int): Boolean {
+        return !changedDirection && abs(difference) in 1..3
+    }
+
+    private fun <T> List<T>.dropSecondElement() : List<T> {
+        return take(1) + drop(2)
     }
 }

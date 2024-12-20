@@ -16,7 +16,8 @@ class DampenedSafetyChecker : SafetyChecker {
         return when {
             abs(difference) in 1..3 -> isSafe(levels, difference, hasBeenDampened)
             hasBeenDampened -> false
-            else -> isSafeInit(levels.drop(1), hasBeenDampened = true)
+            else -> isSafeInit(levels.drop(1), hasBeenDampened = true) ||
+                    isSafeInit(levels.dropSecondElement(), hasBeenDampened = true)
         }
     }
 
@@ -40,7 +41,7 @@ class DampenedSafetyChecker : SafetyChecker {
         return !changedDirection && abs(difference) in 1..3
     }
 
-    private fun <T> List<T>.dropSecondElement() : List<T> {
+    private fun <T> List<T>.dropSecondElement(): List<T> {
         return take(1) + drop(2)
     }
 }

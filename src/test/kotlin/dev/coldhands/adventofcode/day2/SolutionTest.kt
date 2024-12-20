@@ -40,6 +40,6 @@ class SolutionTest {
         val input = readPersonalInput(this)
 
         underTest.countSafeReports(input) shouldBe 0
-        // > 711
+        // > 711 not 713
     }
 }

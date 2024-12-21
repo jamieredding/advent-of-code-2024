@@ -48,6 +48,16 @@ class SolutionTest {
                 )
             }
 
+            @Test
+            fun `do`() {
+                underTest.parseInput("do()") shouldBe listOf(Solution.Do)
+            }
+
+            @Test
+            fun `don't`() {
+                underTest.parseInput("don't()") shouldBe listOf(Solution.Dont)
+            }
+
         }
 
         @Nested
@@ -65,6 +75,13 @@ class SolutionTest {
                     "mul(1,x)",
                     "mul(1,1000)",
                     "mul(1,2",
+                    "d()",
+                    "do(",
+                    "do)",
+                    "o()",
+                    "dont()",
+                    "don'()",
+                    "don't)",
                 ]
             )
             fun `invalid input`(input: String) {

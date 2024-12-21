@@ -2,12 +2,18 @@ package dev.coldhands.adventofcode.day3
 
 class Solution {
 
-    private val regex: Regex = """mul\((\d{1,3}),(\d{1,3})\)""".toRegex()
+    private val regex: Regex = """mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don't\(\)""".toRegex()
 
     fun parseInput(input: String): List<Operation> {
         return regex.findAll(input)
-            .map { mul -> mul.groupValues.drop(1) }
-            .map { args -> Mul(args[0].toInt(), args[1].toInt()) }
+            .map {
+                when {
+                    it.value.startsWith("mul") -> parseMul(it)
+                    it.value.startsWith("do()") -> parseDo()
+                    it.value.startsWith("don't()") -> parseDont()
+                    else -> throw IllegalArgumentException("Unknown operation")
+                }
+            }
             .toList()
     }
 
@@ -19,9 +25,17 @@ class Solution {
             .sum()
     }
 
+    private fun parseMul(input: MatchResult): Mul = input.groupValues.drop(1).let { args ->
+        Mul(args[0].toInt(), args[1].toInt())
+    }
+
+    private fun parseDo(): Do = Do
+
+    private fun parseDont(): Dont = Dont
+
     sealed interface Operation
 
     data class Mul(val first: Int, val second: Int) : Operation
     data object Do : Operation
-    data object Dont: Operation
+    data object Dont : Operation
 }

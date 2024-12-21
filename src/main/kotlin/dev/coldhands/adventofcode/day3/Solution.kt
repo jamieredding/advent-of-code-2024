@@ -17,6 +17,14 @@ class Solution {
             .toList()
     }
 
+    private fun parseMul(input: MatchResult): Mul = input.groupValues.drop(1).let { args ->
+        Mul(args[0].toInt(), args[1].toInt())
+    }
+
+    private fun parseDo(): Do = Do
+
+    private fun parseDont(): Dont = Dont
+
     fun computeInput(input: String): Int {
         return parseInput(input).asSequence()
             .filter { it is Mul }
@@ -28,31 +36,46 @@ class Solution {
     fun runProgram(input: String): Int {
         val program = parseInput(input)
 
-        var enabled = true
-        var total = 0
+        var internalState = InternalState(
+            enabled = true,
+            total = 0
+        )
 
         program.forEach {
-            when {
-                it is Mul && enabled -> total += it.first * it.second
-                it is Do -> enabled = true
-                it is Dont -> enabled = false
-                else -> {}
-            }
+            internalState = it.process(internalState)
         }
-        return total
+        return internalState.total
     }
 
-    private fun parseMul(input: MatchResult): Mul = input.groupValues.drop(1).let { args ->
-        Mul(args[0].toInt(), args[1].toInt())
+    sealed interface Operation {
+        fun process(internalState: InternalState): InternalState
     }
 
-    private fun parseDo(): Do = Do
+    data class Mul(val first: Int, val second: Int) : Operation {
+        override fun process(internalState: InternalState): InternalState {
+            if (internalState.enabled) {
+                val oldTotal = internalState.total
+                val result = first * second
+                return internalState.copy(total = oldTotal + result)
+            }
+            return internalState
+        }
+    }
 
-    private fun parseDont(): Dont = Dont
+    data object Do : Operation {
+        override fun process(internalState: InternalState): InternalState {
+            return internalState.copy(enabled = true)
+        }
+    }
 
-    sealed interface Operation
+    data object Dont : Operation {
+        override fun process(internalState: InternalState): InternalState {
+            return internalState.copy(enabled = false)
+        }
+    }
 
-    data class Mul(val first: Int, val second: Int) : Operation
-    data object Do : Operation
-    data object Dont : Operation
+    data class InternalState(
+        val enabled: Boolean,
+        val total: Int
+    )
 }

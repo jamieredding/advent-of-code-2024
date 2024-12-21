@@ -91,7 +91,7 @@ class SolutionTest {
     }
 
     @Nested
-    inner class ComputeInput {
+    inner class ComputeInputPart1 {
 
         @Test
         fun `single mul`() {
@@ -115,6 +115,82 @@ class SolutionTest {
             val input = readPersonalInput(this)
 
             underTest.computeInput(input) shouldBe 155955228
+        }
+    }
+
+    @Nested
+    inner class RunProgramPart2 {
+
+        @Test
+        fun `enabled by default`() {
+            val input = "mul(2,2)"
+            underTest.runProgram(input) shouldBe 4
+        }
+
+        @Test
+        fun `will add all muls`() {
+            val input = "mul(2,2) mul(2,4)"
+            underTest.runProgram(input) shouldBe 12
+        }
+
+        @Test
+        fun `do leaves mul enabled`() {
+            val input = "do() mul(2,2)"
+            underTest.runProgram(input) shouldBe 4
+        }
+
+        @Test
+        fun `dont disables mul`() {
+            val input = "don't() mul(2,2)"
+            underTest.runProgram(input) shouldBe 0
+        }
+
+        @Test
+        fun `dont disables subsequent muls`() {
+            val input = "don't() mul(2,2) mul(2,2)"
+            underTest.runProgram(input) shouldBe 0
+        }
+
+        @Test
+        fun `do re-enables after dont`() {
+            val input = "don't() mul(2,2) do() mul(2,3)"
+            underTest.runProgram(input) shouldBe 6
+        }
+
+        @Test
+        fun `multiple dos`() {
+            val input = "do() do() mul(2,3)"
+            underTest.runProgram(input) shouldBe 6
+        }
+
+        @Test
+        fun `multiple donts`() {
+            val input = "mul(2,2) don't() don't() mul(2,3)"
+            underTest.runProgram(input) shouldBe 4
+        }
+
+        @Test
+        fun `only do`() {
+            val input = "do()"
+            underTest.runProgram(input) shouldBe 0
+        }
+
+        @Test
+        fun `only dont`() {
+            val input = "don't()"
+            underTest.runProgram(input) shouldBe 0
+        }
+
+        @Test
+        fun `given example`() {
+            val input = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
+            underTest.runProgram(input) shouldBe 48
+        }
+
+        @Test
+        fun `part 2`() {
+            val input = readPersonalInput(this)
+            underTest.runProgram(input) shouldBe 100189366
         }
     }
 }

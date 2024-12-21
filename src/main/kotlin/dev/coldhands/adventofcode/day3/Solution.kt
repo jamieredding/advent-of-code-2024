@@ -25,6 +25,23 @@ class Solution {
             .sum()
     }
 
+    fun runProgram(input: String): Int {
+        val program = parseInput(input)
+
+        var enabled = true
+        var total = 0
+
+        program.forEach {
+            when {
+                it is Mul && enabled -> total += it.first * it.second
+                it is Do -> enabled = true
+                it is Dont -> enabled = false
+                else -> {}
+            }
+        }
+        return total
+    }
+
     private fun parseMul(input: MatchResult): Mul = input.groupValues.drop(1).let { args ->
         Mul(args[0].toInt(), args[1].toInt())
     }

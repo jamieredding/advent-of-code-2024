@@ -3,8 +3,11 @@ package dev.coldhands.adventofcode.day4
 import dev.coldhands.adventofcode.day4.Direction.*
 import dev.coldhands.adventofcode.day4.Solution.Point
 import dev.coldhands.adventofcode.day4.Solution.PointRange
+import kotlin.math.abs
+import kotlin.math.log
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.text.lines
 
 class Solution {
 
@@ -32,41 +35,51 @@ class Solution {
         }
     }
 
-    fun countXmasInLines(lines: List<String>): Int {
-        return lines.sumOf { line ->
-            var count = 0
-            var index = 0
+    fun xmasOccurrences(line: String): Int {
+        var count = 0
+        var index = 0
 
-            while (index < line.length) {
-                if (index + 4 > line.length) {
-                    break
-                }
-                if (line.substring(index, index + 4).matches(regex)) {
-                    count++
-                    index += 3
-                } else {
-                    index++
-                }
+        while (index < line.length) {
+            if (index + 4 > line.length) {
+                break
             }
-            count
+            if (line.substring(index, index + 4).matches(regex)) {
+                count++
+                index += 3
+            } else {
+                index++
+            }
         }
+        return count
     }
 
-    fun viewLines(direction: Direction, input: String): List<String> {
-        return when (direction) {
-            HORIZONTAL -> input.lines()
-            VERTICAL -> input.verticalLines()
-            DIAGONAL_TOP_LEFT -> input.diagonalTopLeftLines()
-            DIAGONAL_TOP_RIGHT -> input.diagonalTopRightLines()
-        }
-    }
+    /*
+
+    ..X...
+    .SAMX.
+    .A..A.
+    XMAS.S
+    .X....
+     */
 
     fun countOfXmasInWordSearch(input: String): Int {
-        return Direction.entries.asSequence()
-            .map {
-                viewLines(it, input)
+        val lines = input.lines()
+        val xMax: Int = lines.first().length - 1
+        val yMax: Int = lines.size - 1
+        val lengthEitherSideInclusive = "XMAS".length
+
+        var total = 0
+        for (x in 0..xMax) {
+            for (y in 0..yMax) {
+                val pointToCheck = Point(x, y)
+                val characterAtPoint = lines[pointToCheck.y][pointToCheck.x]
+                if (characterAtPoint == 'X') {
+                    total += input.lookAroundAt(pointToCheck, lengthEitherSideInclusive)
+                        .sumOf { line -> xmasOccurrences(line) }
+                }
             }
-            .sumOf { lines -> countXmasInLines(lines) }
+        }
+        return total
     }
 
     private fun String.verticalLines(): List<String> {
@@ -188,8 +201,9 @@ fun String.directionalSubstring(direction: Direction, centrePoint: Point, length
 
         DIAGONAL_TOP_LEFT -> {
             val startingIndexX = max(0, centrePoint.x - (lengthEitherSideInclusive - 1))
-            val startingIndexY = max(0, centrePoint.y - (lengthEitherSideInclusive - 1))
-            val endingIndexX = min(xMax, centrePoint.y + (lengthEitherSideInclusive - 1))
+            val startingIndexY = max(0, centrePoint.y - abs(startingIndexX - centrePoint.x))
+
+            val endingIndexX = min(xMax, centrePoint.x + (lengthEitherSideInclusive - 1))
             val endingIndexY = min(yMax, centrePoint.y + (lengthEitherSideInclusive - 1))
 
             val startingPoint = Point(startingIndexX, startingIndexY)
@@ -199,10 +213,11 @@ fun String.directionalSubstring(direction: Direction, centrePoint: Point, length
         }
 
         DIAGONAL_TOP_RIGHT -> {
-            val startingIndexX = min(xMax, centrePoint.x + (lengthEitherSideInclusive - 1))
             val startingIndexY = max(0, centrePoint.y - (lengthEitherSideInclusive - 1))
-            val endingIndexX = max(0, centrePoint.x - (lengthEitherSideInclusive - 1))
+            val startingIndexX = min(xMax, centrePoint.x + abs(startingIndexY - centrePoint.y))
+
             val endingIndexY = min(yMax, centrePoint.y + (lengthEitherSideInclusive - 1))
+            val endingIndexX = max(0, centrePoint.x - abs(endingIndexY - centrePoint.y))
 
             val startingPoint = Point(startingIndexX, startingIndexY)
             val endingPoint = Point(endingIndexX, endingIndexY)
@@ -213,6 +228,9 @@ fun String.directionalSubstring(direction: Direction, centrePoint: Point, length
 
     val stringBuilder = StringBuilder()
     for (point in pointRange) {
+        if (point.x == xMax + 1 || point.y == yMax + 1) {
+            println("bang")
+        }
         stringBuilder.append(lines[point.y][point.x])
     }
     return stringBuilder.toString()
@@ -225,4 +243,16 @@ fun Direction.next(point: Point): Point {
         DIAGONAL_TOP_LEFT -> Point(x = point.x + 1, y = point.y + 1)
         DIAGONAL_TOP_RIGHT -> Point(x = point.x - 1, y = point.y + 1)
     }
+}
+
+fun String.lookAroundAt(centrePoint: Point, lengthEitherSideInclusive: Int): List<String> {
+    return Direction.entries
+        .map { direction ->
+            this@lookAroundAt.directionalSubstring(
+                direction,
+                centrePoint,
+                lengthEitherSideInclusive
+            )
+        }
+        .toList()
 }

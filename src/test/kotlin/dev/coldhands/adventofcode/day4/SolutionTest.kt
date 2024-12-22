@@ -3,6 +3,7 @@ package dev.coldhands.adventofcode.day4
 import dev.coldhands.adventofcode.day4.Direction.*
 import dev.coldhands.adventofcode.readPersonalInput
 import dev.coldhands.adventofcode.day4.Solution.*
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -141,6 +142,21 @@ class SolutionTest {
                     lengthEitherSideInclusive = 2
                 ) shouldBe "59"
             }
+
+            @Test
+            fun `broken case 1`() {
+                """
+                ..X...
+                .SAMX.
+                .A..A.
+                XMAS.S
+                .X....
+            """.trimIndent().directionalSubstring(
+                    direction = DIAGONAL_TOP_LEFT,
+                    centrePoint = Point(0, 3),
+                    lengthEitherSideInclusive = 4
+                ) shouldBe "XX"
+            }
         }
 
         @Nested
@@ -184,145 +200,89 @@ class SolutionTest {
                     lengthEitherSideInclusive = 2
                 ) shouldBe "57"
             }
+
+            @Test
+            fun `broken case 1`() {
+
+                """
+                ..X...
+                .SAMX.
+                .A..A.
+                XMAS.S
+                .X....
+            """.trimIndent().directionalSubstring(
+                    direction = DIAGONAL_TOP_RIGHT,
+                    centrePoint = Point(0, 0),
+                    lengthEitherSideInclusive = 4
+                ) shouldBe "."
+            }
+
+            @Test
+            fun `broken case 2`() {
+
+                """
+                ..X...
+                .SAMX.
+                .A..A.
+                XMAS.S
+                .X....
+            """.trimIndent().directionalSubstring(
+                    direction = DIAGONAL_TOP_RIGHT,
+                    centrePoint = Point(1, 4),
+                    lengthEitherSideInclusive = 4
+                ) shouldBe "X.AX"
+            }
         }
 
     }
 
     @Nested
-    inner class CountXmasInLines {
+    inner class LookAroundAtPoint {
+
+        @Test
+        fun `should find all lines in local area`() {
+            """
+                123
+                456
+                789
+            """.trimIndent().lookAroundAt(
+                centrePoint = Point(1, 1),
+                lengthEitherSideInclusive = 2
+            ) shouldContainExactlyInAnyOrder listOf(
+                "456",
+                "258",
+                "159",
+                "357"
+            )
+        }
+    }
+
+    @Nested
+    inner class XmasOccurrences {
 
         @Test
         fun `no occurrences`() {
-            underTest.countXmasInLines(
-                """
-                ....
-                ....
-            """.trimIndent()
-                    .lines()
-            ) shouldBe 0
+            underTest.xmasOccurrences("....") shouldBe 0
         }
 
         @Test
         fun `one occurrence`() {
-            underTest.countXmasInLines(
-                """
-                XMAS
-                ....
-            """.trimIndent()
-                    .lines()
-            ) shouldBe 1
+            underTest.xmasOccurrences("XMAS") shouldBe 1
         }
 
         @Test
-        fun `occurrences on multiple lines`() {
-            underTest.countXmasInLines(
-                """
-                XMAS
-                .... XMAS
-            """.trimIndent()
-                    .lines()
-            ) shouldBe 2
-        }
-
-        @Test
-        fun `multiple occurrences on a single line`() {
-            underTest.countXmasInLines(
-                """
-                XMASXMAS
-                ....
-            """.trimIndent()
-                    .lines()
-            ) shouldBe 2
+        fun `multiple occurrences`() {
+            underTest.xmasOccurrences("XMASXMAS") shouldBe 2
         }
 
         @Test
         fun `allow SAMX as valid XMAS`() {
-            underTest.countXmasInLines(
-                """
-                SAMX
-                ....
-            """.trimIndent()
-                    .lines()
-            ) shouldBe 1
+            underTest.xmasOccurrences("SAMX") shouldBe 1
         }
 
         @Test
         fun `count overlapping twice`() {
-            underTest.countXmasInLines(
-                """
-                XMASAMX
-                ....
-            """.trimIndent()
-                    .lines()
-            ) shouldBe 2
-        }
-    }
-
-    @Nested
-    inner class AllViewsOverWordSearch {
-
-        @Test
-        fun `horizontal view`() {
-            underTest.viewLines(
-                HORIZONTAL, """
-                123
-                456
-                789
-            """.trimIndent()
-            ) shouldBe listOf(
-                "123",
-                "456",
-                "789"
-            )
-        }
-
-        @Test
-        fun `vertical view`() {
-            underTest.viewLines(
-                VERTICAL, """
-                123
-                456
-                789
-            """.trimIndent()
-            ) shouldBe listOf(
-                "147",
-                "258",
-                "369"
-            )
-        }
-
-        @Test
-        fun `diagonal from top left`() {
-            underTest.viewLines(
-                DIAGONAL_TOP_LEFT, """
-                123
-                456
-                789
-            """.trimIndent()
-            ) shouldBe listOf(
-                "1",
-                "24",
-                "357",
-                "68",
-                "9"
-            )
-        }
-
-        @Test
-        fun `diagonal from top right`() {
-            underTest.viewLines(
-                DIAGONAL_TOP_RIGHT, """
-                123
-                456
-                789
-            """.trimIndent()
-            ) shouldBe listOf(
-                "3",
-                "26",
-                "159",
-                "48",
-                "7"
-            )
+            underTest.xmasOccurrences("XMASAMX") shouldBe 2
         }
     }
 

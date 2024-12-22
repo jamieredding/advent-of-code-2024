@@ -151,6 +151,18 @@ fun String.directionalSubstring(direction: Direction, centrePoint: Point, length
 
             return line.substring(startingIndex, endingIndex + 1)
         }
+        VERTICAL -> {
+            val lineLength = lines.size
+
+            val startingIndex = max(0, centrePoint.y - (lengthEitherSide - 1))
+            val endingIndex = min(lineLength - 1, centrePoint.y + (lengthEitherSide - 1))
+
+            val stringBuilder = StringBuilder()
+            for (y in startingIndex until endingIndex+1) {
+                stringBuilder.append(lines[y][centrePoint.x])
+            }
+            return stringBuilder.toString()
+        }
 
         else -> TODO()
     }

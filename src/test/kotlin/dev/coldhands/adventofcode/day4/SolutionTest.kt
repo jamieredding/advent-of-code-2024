@@ -51,6 +51,45 @@ class SolutionTest {
                 lengthEitherSide = 2
             ) shouldBe "23"
         }
+
+        @Test
+        fun vertical() {
+            """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                direction = Direction.VERTICAL,
+                centrePoint = Point(1, 1),
+                lengthEitherSide = 2
+            ) shouldBe "258"
+        }
+
+        @Test
+        fun `vertical centred on top`() {
+            """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                direction = Direction.VERTICAL,
+                centrePoint = Point(0, 0),
+                lengthEitherSide = 2
+            ) shouldBe "14"
+        }
+
+        @Test
+        fun `vertical centred on bottom`() {
+            """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                direction = Direction.VERTICAL,
+                centrePoint = Point(0, 2),
+                lengthEitherSide = 2
+            ) shouldBe "47"
+        }
     }
 
     @Nested

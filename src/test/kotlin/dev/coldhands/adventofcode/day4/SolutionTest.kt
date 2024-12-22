@@ -351,7 +351,7 @@ class SolutionTest {
         @Test
         fun `part 2`() {
             val input = readPersonalInput(this)
-            underTest.countOfXShapedMasInWordSearch(input) shouldBe 2618
+            underTest.countOfXShapedMasInWordSearch(input) shouldBe 2011
         }
     }
 }

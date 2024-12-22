@@ -1,5 +1,6 @@
 package dev.coldhands.adventofcode.day4
 
+import dev.coldhands.adventofcode.day4.Direction.*
 import dev.coldhands.adventofcode.readPersonalInput
 import dev.coldhands.adventofcode.day4.Solution.*
 import io.kotest.matchers.shouldBe
@@ -13,83 +14,178 @@ class SolutionTest {
     @Nested
     inner class DirectionalSubstring {
 
-        @Test
-        fun horizontal() {
-            """
+        @Nested
+        inner class Horizontal {
+
+            @Test
+            fun `length within bounds`() {
+                """
                 123
                 456
                 789
             """.trimIndent().directionalSubstring(
-                direction = Direction.HORIZONTAL,
-                centrePoint = Point(1, 1),
-                lengthEitherSide = 2
-            ) shouldBe "456"
+                    direction = HORIZONTAL,
+                    centrePoint = Point(1, 1),
+                    lengthEitherSideInclusive = 2
+                ) shouldBe "456"
+            }
+
+            @Test
+            fun `start out of bounds`() {
+                """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                    direction = HORIZONTAL,
+                    centrePoint = Point(0, 0),
+                    lengthEitherSideInclusive = 2
+                ) shouldBe "12"
+            }
+
+            @Test
+            fun `end out of bounds`() {
+                """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                    direction = HORIZONTAL,
+                    centrePoint = Point(2, 0),
+                    lengthEitherSideInclusive = 2
+                ) shouldBe "23"
+            }
         }
 
-        @Test
-        fun `horizontal centred on left`() {
-            """
+        @Nested
+        inner class Vertical {
+
+            @Test
+            fun `length within bounds`() {
+                """
                 123
                 456
                 789
             """.trimIndent().directionalSubstring(
-                direction = Direction.HORIZONTAL,
-                centrePoint = Point(0, 0),
-                lengthEitherSide = 2
-            ) shouldBe "12"
+                    direction = VERTICAL,
+                    centrePoint = Point(1, 1),
+                    lengthEitherSideInclusive = 2
+                ) shouldBe "258"
+            }
+
+            @Test
+            fun `start out of bounds`() {
+                """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                    direction = VERTICAL,
+                    centrePoint = Point(0, 0),
+                    lengthEitherSideInclusive = 2
+                ) shouldBe "14"
+            }
+
+            @Test
+            fun `end out of bounds`() {
+                """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                    direction = VERTICAL,
+                    centrePoint = Point(0, 2),
+                    lengthEitherSideInclusive = 2
+                ) shouldBe "47"
+            }
         }
 
-        @Test
-        fun `horizontal centred on right`() {
-            """
+        @Nested
+        inner class DiagonalTopLeft {
+
+            @Test
+            fun `length within bounds`() {
+                """
                 123
                 456
                 789
             """.trimIndent().directionalSubstring(
-                direction = Direction.HORIZONTAL,
-                centrePoint = Point(2, 0),
-                lengthEitherSide = 2
-            ) shouldBe "23"
+                    direction = DIAGONAL_TOP_LEFT,
+                    centrePoint = Point(1, 1),
+                    lengthEitherSideInclusive = 2
+                ) shouldBe "159"
+            }
+
+            @Test
+            fun `start out of bounds`() {
+                """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                    direction = DIAGONAL_TOP_LEFT,
+                    centrePoint = Point(0, 0),
+                    lengthEitherSideInclusive = 2
+                ) shouldBe "15"
+            }
+
+            @Test
+            fun `end out of bounds`() {
+                """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                    direction = DIAGONAL_TOP_LEFT,
+                    centrePoint = Point(2, 2),
+                    lengthEitherSideInclusive = 2
+                ) shouldBe "59"
+            }
         }
 
-        @Test
-        fun vertical() {
-            """
+        @Nested
+        inner class DiagonalTopRight {
+
+            @Test
+            fun `length within bounds`() {
+                """
                 123
                 456
                 789
             """.trimIndent().directionalSubstring(
-                direction = Direction.VERTICAL,
-                centrePoint = Point(1, 1),
-                lengthEitherSide = 2
-            ) shouldBe "258"
+                    direction = DIAGONAL_TOP_RIGHT,
+                    centrePoint = Point(1, 1),
+                    lengthEitherSideInclusive = 2
+                ) shouldBe "357"
+            }
+
+            @Test
+            fun `start out of bounds`() {
+                """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                    direction = DIAGONAL_TOP_RIGHT,
+                    centrePoint = Point(2, 0),
+                    lengthEitherSideInclusive = 2
+                ) shouldBe "35"
+            }
+
+            @Test
+            fun `end out of bounds`() {
+                """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                    direction = DIAGONAL_TOP_RIGHT,
+                    centrePoint = Point(0, 2),
+                    lengthEitherSideInclusive = 2
+                ) shouldBe "57"
+            }
         }
 
-        @Test
-        fun `vertical centred on top`() {
-            """
-                123
-                456
-                789
-            """.trimIndent().directionalSubstring(
-                direction = Direction.VERTICAL,
-                centrePoint = Point(0, 0),
-                lengthEitherSide = 2
-            ) shouldBe "14"
-        }
-
-        @Test
-        fun `vertical centred on bottom`() {
-            """
-                123
-                456
-                789
-            """.trimIndent().directionalSubstring(
-                direction = Direction.VERTICAL,
-                centrePoint = Point(0, 2),
-                lengthEitherSide = 2
-            ) shouldBe "47"
-        }
     }
 
     @Nested
@@ -168,7 +264,7 @@ class SolutionTest {
         @Test
         fun `horizontal view`() {
             underTest.viewLines(
-                Direction.HORIZONTAL, """
+                HORIZONTAL, """
                 123
                 456
                 789
@@ -183,7 +279,7 @@ class SolutionTest {
         @Test
         fun `vertical view`() {
             underTest.viewLines(
-                Direction.VERTICAL, """
+                VERTICAL, """
                 123
                 456
                 789
@@ -198,7 +294,7 @@ class SolutionTest {
         @Test
         fun `diagonal from top left`() {
             underTest.viewLines(
-                Direction.DIAGONAL_TOP_LEFT, """
+                DIAGONAL_TOP_LEFT, """
                 123
                 456
                 789
@@ -215,7 +311,7 @@ class SolutionTest {
         @Test
         fun `diagonal from top right`() {
             underTest.viewLines(
-                Direction.DIAGONAL_TOP_RIGHT, """
+                DIAGONAL_TOP_RIGHT, """
                 123
                 456
                 789

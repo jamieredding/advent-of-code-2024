@@ -2,6 +2,7 @@ package dev.coldhands.adventofcode.day4
 
 import dev.coldhands.adventofcode.day4.Direction.*
 import dev.coldhands.adventofcode.day4.Solution.Point
+import dev.coldhands.adventofcode.day4.Solution.PointRange
 import kotlin.math.max
 import kotlin.math.min
 
@@ -10,6 +11,26 @@ class Solution {
     private val regex = "XMAS|SAMX".toRegex()
 
     data class Point(val x: Int, val y: Int)
+
+    data class PointRange(val direction: Direction, val start: Point, val end: Point) : Iterable<Point> {
+        override fun iterator(): Iterator<Point> = object : Iterator<Point> {
+            private var current = start
+            private val target = end
+
+            override fun hasNext(): Boolean {
+                return when (direction) {
+                    HORIZONTAL, VERTICAL, DIAGONAL_TOP_LEFT -> current.x <= target.x && current.y <= target.y
+                    DIAGONAL_TOP_RIGHT -> current.x >= target.x && current.y <= target.y
+                }
+            }
+
+            override fun next(): Point {
+                val next = current
+                current = direction.next(current)
+                return next
+            }
+        }
+    }
 
     fun countXmasInLines(lines: List<String>): Int {
         return lines.sumOf { line ->
@@ -139,31 +160,69 @@ class Solution {
 
 enum class Direction { HORIZONTAL, VERTICAL, DIAGONAL_TOP_LEFT, DIAGONAL_TOP_RIGHT }
 
-fun String.directionalSubstring(direction: Direction, centrePoint: Point, lengthEitherSide: Int): String {
+fun String.directionalSubstring(direction: Direction, centrePoint: Point, lengthEitherSideInclusive: Int): String {
     val lines = lines()
+    val xMax: Int = lines.first().length - 1
+    val yMax: Int = lines.size - 1
 
-    return when (direction) {
+    val pointRange = when (direction) {
         HORIZONTAL -> {
-            val line = lines[centrePoint.y]
+            val startingIndex = max(0, centrePoint.x - (lengthEitherSideInclusive - 1))
+            val endingIndex = min(xMax, centrePoint.x + (lengthEitherSideInclusive - 1))
 
-            val startingIndex = max(0, centrePoint.x - (lengthEitherSide - 1))
-            val endingIndex = min(line.length - 1, centrePoint.x + (lengthEitherSide - 1))
+            val startingPoint = Point(startingIndex, centrePoint.y)
+            val endingPoint = Point(endingIndex, centrePoint.y)
 
-            return line.substring(startingIndex, endingIndex + 1)
+            PointRange(HORIZONTAL, startingPoint, endingPoint)
         }
+
         VERTICAL -> {
-            val lineLength = lines.size
+            val startingIndex = max(0, centrePoint.y - (lengthEitherSideInclusive - 1))
+            val endingIndex = min(yMax, centrePoint.y + (lengthEitherSideInclusive - 1))
 
-            val startingIndex = max(0, centrePoint.y - (lengthEitherSide - 1))
-            val endingIndex = min(lineLength - 1, centrePoint.y + (lengthEitherSide - 1))
+            val startingPoint = Point(centrePoint.x, startingIndex)
+            val endingPoint = Point(centrePoint.x, endingIndex)
 
-            val stringBuilder = StringBuilder()
-            for (y in startingIndex until endingIndex+1) {
-                stringBuilder.append(lines[y][centrePoint.x])
-            }
-            return stringBuilder.toString()
+            PointRange(VERTICAL, startingPoint, endingPoint)
         }
 
-        else -> TODO()
+        DIAGONAL_TOP_LEFT -> {
+            val startingIndexX = max(0, centrePoint.x - (lengthEitherSideInclusive - 1))
+            val startingIndexY = max(0, centrePoint.y - (lengthEitherSideInclusive - 1))
+            val endingIndexX = min(xMax, centrePoint.y + (lengthEitherSideInclusive - 1))
+            val endingIndexY = min(yMax, centrePoint.y + (lengthEitherSideInclusive - 1))
+
+            val startingPoint = Point(startingIndexX, startingIndexY)
+            val endingPoint = Point(endingIndexX, endingIndexY)
+
+            PointRange(DIAGONAL_TOP_LEFT, startingPoint, endingPoint)
+        }
+
+        DIAGONAL_TOP_RIGHT -> {
+            val startingIndexX = min(xMax, centrePoint.x + (lengthEitherSideInclusive - 1))
+            val startingIndexY = max(0, centrePoint.y - (lengthEitherSideInclusive - 1))
+            val endingIndexX = max(0, centrePoint.x - (lengthEitherSideInclusive - 1))
+            val endingIndexY = min(yMax, centrePoint.y + (lengthEitherSideInclusive - 1))
+
+            val startingPoint = Point(startingIndexX, startingIndexY)
+            val endingPoint = Point(endingIndexX, endingIndexY)
+
+            PointRange(DIAGONAL_TOP_RIGHT, startingPoint, endingPoint)
+        }
+    }
+
+    val stringBuilder = StringBuilder()
+    for (point in pointRange) {
+        stringBuilder.append(lines[point.y][point.x])
+    }
+    return stringBuilder.toString()
+}
+
+fun Direction.next(point: Point): Point {
+    return when (this) {
+        HORIZONTAL -> point.copy(x = point.x + 1)
+        VERTICAL -> point.copy(y = point.y + 1)
+        DIAGONAL_TOP_LEFT -> Point(x = point.x + 1, y = point.y + 1)
+        DIAGONAL_TOP_RIGHT -> Point(x = point.x - 1, y = point.y + 1)
     }
 }

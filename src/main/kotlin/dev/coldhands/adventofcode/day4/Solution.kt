@@ -1,12 +1,15 @@
 package dev.coldhands.adventofcode.day4
 
-import dev.coldhands.adventofcode.day4.Solution.Direction.*
+import dev.coldhands.adventofcode.day4.Direction.*
+import dev.coldhands.adventofcode.day4.Solution.Point
 import kotlin.math.max
 import kotlin.math.min
 
 class Solution {
 
     private val regex = "XMAS|SAMX".toRegex()
+
+    data class Point(val x: Int, val y: Int)
 
     fun countXmasInLines(lines: List<String>): Int {
         return lines.sumOf { line ->
@@ -132,5 +135,23 @@ class Solution {
         return lines.toList()
     }
 
-    enum class Direction { HORIZONTAL, VERTICAL, DIAGONAL_TOP_LEFT, DIAGONAL_TOP_RIGHT }
+}
+
+enum class Direction { HORIZONTAL, VERTICAL, DIAGONAL_TOP_LEFT, DIAGONAL_TOP_RIGHT }
+
+fun String.directionalSubstring(direction: Direction, centrePoint: Point, lengthEitherSide: Int): String {
+    val lines = lines()
+
+    return when (direction) {
+        HORIZONTAL -> {
+            val line = lines[centrePoint.y]
+
+            val startingIndex = max(0, centrePoint.x - (lengthEitherSide - 1))
+            val endingIndex = min(line.length - 1, centrePoint.x + (lengthEitherSide - 1))
+
+            return line.substring(startingIndex, endingIndex + 1)
+        }
+
+        else -> TODO()
+    }
 }

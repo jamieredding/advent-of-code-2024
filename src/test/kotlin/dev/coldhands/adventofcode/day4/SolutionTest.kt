@@ -1,7 +1,7 @@
 package dev.coldhands.adventofcode.day4
 
-import dev.coldhands.adventofcode.day4.Solution.Direction
 import dev.coldhands.adventofcode.readPersonalInput
+import dev.coldhands.adventofcode.day4.Solution.*
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -9,6 +9,49 @@ import org.junit.jupiter.api.Test
 class SolutionTest {
 
     private val underTest = Solution()
+
+    @Nested
+    inner class DirectionalSubstring {
+
+        @Test
+        fun horizontal() {
+            """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                direction = Direction.HORIZONTAL,
+                centrePoint = Point(1, 1),
+                lengthEitherSide = 2
+            ) shouldBe "456"
+        }
+
+        @Test
+        fun `horizontal centred on left`() {
+            """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                direction = Direction.HORIZONTAL,
+                centrePoint = Point(0, 0),
+                lengthEitherSide = 2
+            ) shouldBe "12"
+        }
+
+        @Test
+        fun `horizontal centred on right`() {
+            """
+                123
+                456
+                789
+            """.trimIndent().directionalSubstring(
+                direction = Direction.HORIZONTAL,
+                centrePoint = Point(2, 0),
+                lengthEitherSide = 2
+            ) shouldBe "23"
+        }
+    }
 
     @Nested
     inner class CountXmasInLines {
@@ -153,13 +196,15 @@ class SolutionTest {
 
         @Test
         fun `given example 1`() {
-            underTest.countOfXmasInWordSearch("""
+            underTest.countOfXmasInWordSearch(
+                """
                 ..X...
                 .SAMX.
                 .A..A.
                 XMAS.S
                 .X....
-            """.trimIndent()) shouldBe 4
+            """.trimIndent()
+            ) shouldBe 4
         }
 
         @Test

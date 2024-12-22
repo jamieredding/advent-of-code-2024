@@ -4,7 +4,6 @@ import dev.coldhands.adventofcode.day4.Direction.*
 import dev.coldhands.adventofcode.day4.Solution.Point
 import dev.coldhands.adventofcode.day4.Solution.PointRange
 import kotlin.math.abs
-import kotlin.math.log
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.text.lines
@@ -200,11 +199,19 @@ fun String.directionalSubstring(direction: Direction, centrePoint: Point, length
         }
 
         DIAGONAL_TOP_LEFT -> {
-            val startingIndexX = max(0, centrePoint.x - (lengthEitherSideInclusive - 1))
-            val startingIndexY = max(0, centrePoint.y - abs(startingIndexX - centrePoint.x))
+            val tryMovingXToStart = max(0, centrePoint.x - (lengthEitherSideInclusive - 1))
+            val tryMovingYToStart = max(0, centrePoint.y - (lengthEitherSideInclusive - 1))
+            val validStepsToStart = min(abs(tryMovingXToStart - centrePoint.x), abs(tryMovingYToStart - centrePoint.y))
 
-            val endingIndexX = min(xMax, centrePoint.x + (lengthEitherSideInclusive - 1))
-            val endingIndexY = min(yMax, centrePoint.y + (lengthEitherSideInclusive - 1))
+            val startingIndexX = centrePoint.x - validStepsToStart
+            val startingIndexY = centrePoint.y - validStepsToStart
+
+            val tryMovingXToEnd = min(xMax, centrePoint.x + (lengthEitherSideInclusive - 1))
+            val tryMovingYToEnd = min(yMax, centrePoint.y + (lengthEitherSideInclusive - 1))
+            val validStepsToEnd = min(abs(tryMovingXToEnd - centrePoint.x), abs(tryMovingYToEnd - centrePoint.y))
+
+            val endingIndexX = centrePoint.x + validStepsToEnd
+            val endingIndexY = centrePoint.y + validStepsToEnd
 
             val startingPoint = Point(startingIndexX, startingIndexY)
             val endingPoint = Point(endingIndexX, endingIndexY)
@@ -213,11 +220,20 @@ fun String.directionalSubstring(direction: Direction, centrePoint: Point, length
         }
 
         DIAGONAL_TOP_RIGHT -> {
-            val startingIndexY = max(0, centrePoint.y - (lengthEitherSideInclusive - 1))
-            val startingIndexX = min(xMax, centrePoint.x + abs(startingIndexY - centrePoint.y))
+            val tryMovingXToStart = min(xMax, centrePoint.x + (lengthEitherSideInclusive - 1))
+            val tryMovingYToStart = max(0, centrePoint.y - (lengthEitherSideInclusive - 1))
+            val validStepsToStart = min(abs(tryMovingXToStart - centrePoint.x), abs(tryMovingYToStart - centrePoint.y))
 
-            val endingIndexY = min(yMax, centrePoint.y + (lengthEitherSideInclusive - 1))
-            val endingIndexX = max(0, centrePoint.x - abs(endingIndexY - centrePoint.y))
+            val startingIndexX = centrePoint.x + validStepsToStart
+            val startingIndexY = centrePoint.y - validStepsToStart
+
+
+            val tryMovingXToEnd = max(0, centrePoint.x - (lengthEitherSideInclusive - 1))
+            val tryMovingYToEnd = min(yMax, centrePoint.y + (lengthEitherSideInclusive - 1))
+            val validStepsToEnd = min(abs(tryMovingXToEnd - centrePoint.x), abs(tryMovingYToEnd - centrePoint.y))
+
+            val endingIndexX = centrePoint.x - validStepsToEnd
+            val endingIndexY = centrePoint.y + validStepsToEnd
 
             val startingPoint = Point(startingIndexX, startingIndexY)
             val endingPoint = Point(endingIndexX, endingIndexY)
@@ -228,9 +244,6 @@ fun String.directionalSubstring(direction: Direction, centrePoint: Point, length
 
     val stringBuilder = StringBuilder()
     for (point in pointRange) {
-        if (point.x == xMax + 1 || point.y == yMax + 1) {
-            println("bang")
-        }
         stringBuilder.append(lines[point.y][point.x])
     }
     return stringBuilder.toString()

@@ -11,6 +11,7 @@ import kotlin.text.lines
 class Solution {
 
     private val regex = "XMAS|SAMX".toRegex()
+    private val masRegex = "MAS|SAM".toRegex()
 
     data class Point(val x: Int, val y: Int)
 
@@ -66,6 +67,32 @@ class Solution {
                 if (characterAtPoint == 'X') {
                     total += input.lookAroundAt(pointToCheck, lengthEitherSideInclusive)
                         .sumOf { line -> xmasOccurrences(line) }
+                }
+            }
+        }
+        return total
+    }
+
+    fun countOfXShapedMasInWordSearch(input: String): Int {
+        val lines = input.lines()
+        val xMax: Int = lines.first().length - 1
+        val yMax: Int = lines.size - 1
+        val lengthEitherSideInclusive = 2
+
+        var total = 0
+        for (x in 0..xMax) {
+            for (y in 0..yMax) {
+                val pointToCheck = Point(x, y)
+                val characterAtPoint = lines[pointToCheck.y][pointToCheck.x]
+                if (characterAtPoint == 'A') {
+                    val countOfDiagonalMas = listOf(DIAGONAL_TOP_LEFT, DIAGONAL_TOP_RIGHT).count { direction ->
+                        val directionalSubstring =
+                            input.directionalSubstring(direction, pointToCheck, lengthEitherSideInclusive)
+                        directionalSubstring.matches(masRegex)
+                    }
+                    if (countOfDiagonalMas == 2) {
+                        total++
+                    }
                 }
             }
         }

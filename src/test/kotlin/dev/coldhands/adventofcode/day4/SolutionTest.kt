@@ -326,4 +326,32 @@ class SolutionTest {
             underTest.countOfXmasInWordSearch(input) shouldBe 2618
         }
     }
+
+    @Nested
+    inner class CountOfXShapedMasInWordSearch {
+
+        @Test
+        fun `given example 1`() {
+            underTest.countOfXShapedMasInWordSearch(
+                """
+                .M.S......
+                ..A..MSMS.
+                .M.S.MAA..
+                ..A.ASMSM.
+                .M.S.M....
+                ..........
+                S.S.S.S.S.
+                .A.A.A.A..
+                M.M.M.M.M.
+                ..........
+            """.trimIndent()
+            ) shouldBe 9
+        }
+
+        @Test
+        fun `part 2`() {
+            val input = readPersonalInput(this)
+            underTest.countOfXShapedMasInWordSearch(input) shouldBe 2618
+        }
+    }
 }

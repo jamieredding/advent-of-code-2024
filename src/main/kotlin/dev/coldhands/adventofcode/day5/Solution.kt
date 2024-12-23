@@ -24,6 +24,10 @@ fun getOrderedUpdates(rules: List<PageOrderingRule>, updates: List<Update>): Lis
     return updates.filter { sort(it, rules) == it }
 }
 
+fun getUnorderedUpdates(rules: List<PageOrderingRule>, updates: List<Update>): List<Update> {
+    return updates.filter { sort(it, rules) != it }
+}
+
 fun sumMiddlePageNumbers(updates: List<Update>): Int {
     return updates.sumOf {
         val size = it.pages.size

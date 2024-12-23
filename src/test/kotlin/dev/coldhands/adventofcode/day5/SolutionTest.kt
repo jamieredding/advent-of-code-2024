@@ -65,6 +65,15 @@ class SolutionTest {
     }
 
     @Test
+    fun `filters only unordered updates`() {
+        getUnorderedUpdates(rules, updates) shouldBe listOf(
+            Update(pages = listOf(75, 97, 47, 61, 53)),
+            Update(pages = listOf(61, 13, 29)),
+            Update(pages = listOf(97, 13, 75, 29, 47)),
+        )
+    }
+
+    @Test
     fun `sum middle page numbers`() {
         sumMiddlePageNumbers(listOf(
             Update(pages = listOf(75, 47, 61, 53, 29)),
@@ -83,5 +92,18 @@ class SolutionTest {
             .run { sumMiddlePageNumbers(this) }
 
         result shouldBe 6267
+    }
+
+    @Test
+    fun `part 2` () {
+        val inputString = readPersonalInput(this)
+
+        val input = Parser().parse(inputString)
+
+        val result = getUnorderedUpdates(input.pageOrderingRules, input.updates)
+            .map { update -> sort(update, input.pageOrderingRules) }
+            .run { sumMiddlePageNumbers(this) }
+
+        result shouldBe 5184
     }
 }
